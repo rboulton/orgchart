@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Org Chart</title>
+  <link rel="stylesheet" href="assets/font-awesome.min.css">
+  <link rel="stylesheet" href="assets/jquery.orgchart.css">
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/orgchart_node.css">
+  <style type="text/css">
+    .orgchart { background: #fff; }
+    .orgchart td.left, .orgchart td.right, .orgchart td.top { border-color: #aaa; }
+    .orgchart td>.down { background-color: #aaa; }
+    .orgchart td>.down { background-color: #aaa; }
+    .orgchart .node { width: 180px; }
+    .orgchart .node .content { height: 60px; }
+    {% for team, style in team_styles.items() %}
+    div.node.team-{{ team }} .content { {{ style["content"] }} }
+    div.node.team-{{ team }} .title { {{ style["title"] }} }
+    {% endfor %}
+    .orgchart .node.minimised { width: 30px; }
+    .orgchart .node.minimised .content { height: 0px; }
+  </style>
+</head>
+<body>
+  <div class="hovered_node node"></div>
+  <div id="chart-container"></div>
+
+  <script type="text/javascript" src="assets/es6-promise.auto.min.js"></script>
+  <script type="text/javascript" src="assets/html2canvas.min.js"></script>
+  <script type="text/javascript" src="assets/jquery.min.js"></script>
+  <script type="text/javascript" src="assets/jquery.orgchart.js"></script>
+  <script type="text/javascript">
+    $(function() {
+
+      var data = {{ data|tojson|safe }};
+
+      $('#chart-container').orgchart({
+        'data' : data,
+        'nodeContent': 'title',
+        'toggleSiblingsResp': false,
+        'exportButton': true,
+        // 'verticalDepth': 10,
+      });
+
+      function toggleMinimised(state) {
+        if (state === undefined) {
+          state = !minimised;
+        }
+        minimised = state;
+        if (minimised) {
+          $(".orgchart .node").addClass("minimised");
+        } else {
+          $(".orgchart .node").removeClass("minimised");
+          $(".hovered_node").empty();
+        }
+      }
+
+      var minimised = false;
+      $(document).keypress(function(e) {
+          // 'm' to minimise the org chart components
+          if (e.keyCode === 109) toggleMinimised();
+      });
+
+      $(".orgchart .node").hover(function() {
+        if (minimised) {
+          var contents = ($(this).html());
+          $(".hovered_node").empty();
+          $(this).clone().appendTo(".hovered_node");
+        }
+      });
+    });
+  </script>
+  </body>
+</html>
