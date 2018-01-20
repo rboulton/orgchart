@@ -23,12 +23,48 @@
   </style>
 </head>
 <body>
+  <div id="tools">
+    <div class="team_list">
+      <ol>
+        <li><input checked type="checkbox" id="team-toggle-all"><label for="team-toggle-all">All Teams</label></li>
+        {% for team, count in teams %}
+        <li><input checked type="checkbox" class="team-toggle" data-team="{{team}}" id="team-{{ team }}"><label for="team-{{ team }}">{{ team }} ({{count}})</label></li>
+        {% endfor %}
+      </ol>
+    </div>
+
+    <div class="community_list">
+      <ol>
+        <li><input checked type="checkbox" id="community-toggle-all"><label for="community-toggle-all">All Communities</label></li>
+        {% for community, count in communities %}
+        <li><input checked type="checkbox" class="community-toggle" data-community="{{community}}" id="community-{{ community }}"><label for="community-{{ community }}">{{ community }} ({{count}})</label></li>
+        {% endfor %}
+      </ol>
+    </div>
+
+    <div class="title_list">
+      <ol>
+        <li><input checked type="checkbox" id="title-toggle-all"><label for="title-toggle-all">All job titles</label></li>
+        {% for title, count in titles %}
+        <li><input checked type="checkbox" class="title-toggle" data-title="{{title}}" id="title-{{ title }}"><label for="title-{{ title }}">{{ title }} ({{count}})</label></li>
+        {% endfor %}
+      </ol>
+    </div>
+
+
+    <div id="tool-expand">
+      <button>
+        <i class="fa fa-angle-double-left" aria-hidden="true"></i>
+      </button>
+    </div>
+  </div>
   <div class="hovered_node node"></div>
   <div id="chart-container"></div>
 
   <script type="text/javascript" src="assets/es6-promise.auto.min.js"></script>
   <script type="text/javascript" src="assets/html2canvas.min.js"></script>
   <script type="text/javascript" src="assets/jquery.min.js"></script>
+  <script type="text/javascript" src="assets/jspdf.min.js"></script>
   <script type="text/javascript" src="assets/jquery.orgchart.js"></script>
   <script type="text/javascript">
     $(function() {
@@ -40,33 +76,129 @@
         'nodeContent': 'title',
         'toggleSiblingsResp': false,
         'exportButton': true,
+        'exportFileextension': 'pdf'
         // 'verticalDepth': 10,
       });
 
-      function toggleMinimised(state) {
-        if (state === undefined) {
-          state = !minimised;
-        }
-        minimised = state;
-        if (minimised) {
-          $(".orgchart .node").addClass("minimised");
-        } else {
-          $(".orgchart .node").removeClass("minimised");
-          $(".hovered_node").empty();
-        }
+      function setMinimised() {
+        var communities = $.map(
+          $("input.community-toggle"),
+          function(input) {
+            var checked = $(input).is(':checked');
+            if (checked) {
+              return $(input).data('community');
+            }
+            return undefined;
+          }
+        )
+        var teams = $.map(
+          $("input.team-toggle"),
+          function(input) {
+            var checked = $(input).is(':checked');
+            if (checked) {
+              return $(input).data('team');
+            }
+            return undefined;
+          }
+        )
+        var titles = $.map(
+          $("input.title-toggle"),
+          function(input) {
+            var checked = $(input).is(':checked');
+            if (checked) {
+              return $(input).data('title');
+            }
+            return undefined;
+          }
+        )
+
+        $(".orgchart .node").each(function () {
+          var node = $(this);
+          var minimise = false;
+
+          if ($.map(communities, function(community) {
+                if (node.hasClass('community-' + community)) return community;
+              }).length == 0) {
+            minimise = true;
+          }
+
+          if ($.map(teams, function(team) {
+                if (node.hasClass('team-' + team)) return team;
+              }).length == 0) {
+            minimise = true;
+            }
+
+          if ($.map(titles, function(team) {
+                if (node.hasClass('title-' + team)) return team;
+              }).length == 0) {
+            minimise = true;
+          }
+
+          if (minimise) {
+            node.addClass("minimised");
+          } else {
+            node.removeClass("minimised");
+          }
+        })
+
       }
 
-      var minimised = false;
-      $(document).keypress(function(e) {
-          // 'm' to minimise the org chart components
-          if (e.keyCode === 109) toggleMinimised();
+
+      $("input.community-toggle").change(function(e) {
+        setMinimised();
       });
 
+      $("input.team-toggle").change(function(e) {
+        setMinimised();
+      });
+
+      $("input.title-toggle").change(function(e) {
+        setMinimised();
+      });
+
+      $("input#community-toggle-all").change(function(e) {
+        var checked = $(this).is(':checked');
+        $("input.community-toggle").each(function(_, input) {
+          input.checked = checked;
+        });
+        setMinimised();
+      });
+
+      $("input#team-toggle-all").change(function(e) {
+        var checked = $(this).is(':checked');
+        $("input.team-toggle").each(function(_, input) {
+          input.checked = checked;
+        });
+        setMinimised();
+      });
+
+      $("input#title-toggle-all").change(function(e) {
+        var checked = $(this).is(':checked');
+        $("input.title-toggle").each(function(_, input) {
+          input.checked = checked;
+        });
+        setMinimised();
+      });
+
+
       $(".orgchart .node").hover(function() {
-        if (minimised) {
-          var contents = ($(this).html());
-          $(".hovered_node").empty();
-          $(this).clone().appendTo(".hovered_node");
+        var contents = ($(this).html());
+        $(".hovered_node").empty();
+        $(this).clone().appendTo(".hovered_node");
+      }, function() {
+        $(".hovered_node").empty();
+      });
+
+      $("#tool-expand>button").click(function(e) {
+        var button = $(this);
+        var toolbox = $("#tools");
+        e.preventDefault();
+        if (toolbox.hasClass("collapsed")){
+          toolbox.removeClass("collapsed");
+          $("#tool-expand>button>i").removeClass("fa-angle-double-right").addClass("fa-angle-double-left")
+        } else {
+          toolbox.addClass("collapsed");
+          $("#tool-expand>button>i").removeClass("fa-angle-double-left").addClass("fa-angle-double-right")
         }
       });
     });

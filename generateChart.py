@@ -35,21 +35,21 @@ def slug(text):
     return re.sub('[^a-z0-1]+', '-', text.lower())
 
 teams = Counter()
+communities = Counter()
+titles = Counter()
 
 def genStructure(name, depth):
     record = people[name]
-    team = record.get('team', '')
-    community = record.get('community', '')
-    title = record.get('title', '')
-    level = record.get('level', '0')
+    team = record.get('team', '') or 'other'
+    community = record.get('community', '') or 'other'
+    title = record.get('title', '') or 'other'
+    # level = record.get('level', '0')
 
-    if community:
-        text = '%s<br>%s<br>%s' % (title, team, community)
-    else:
-        text = team
+    text = '%s<br>%s<br>%s' % (title, team, community)
+
     result = dict(
         name = name,
-        title = text
+        title = text,
     )
 
     reports = record.get('reports')
@@ -58,12 +58,15 @@ def genStructure(name, depth):
             genStructure(childname, depth + 1)
             for childname in reports
         ]
-    #if depth >= 3:
-    #    result['collapsed'] = True
+        result['name'] = "{} ({})".format(name, len(reports))
 
     classes = []
     teams[slug(team)] += 1
+    communities[slug(community)] += 1
+    titles[slug(title)] += 1
     classes.append('team-%s' % (slug(team)))
+    classes.append('community-%s' % (slug(community)))
+    classes.append('title-%s' % (slug(title)))
     if classes:
         result['className'] = ' '.join(classes)
 
@@ -96,7 +99,7 @@ team_styles = {
     },
     'gaap-paas': {
         'content': '',
-        'title': 'background-color: #8b0000',
+        'title': 'background-color: #b16aef',
     },
     'gaap-pay': {
         'content': '',
@@ -114,22 +117,40 @@ team_styles = {
         'content': '',
         'title': 'background-color: #a3a707',
     },
+    'service-design-standards': {
+        'content': '',
+        'title': 'background-color: #0a2ff5cc',
+    },
+    'tech-standards': {
+        'content': '',
+        'title': 'background-color: #00abd4cc',
+    },
+    'community': {
+        'content': '',
+        'title': 'background-color: #000000',
+    },
 #    better-use-of-data
-#    community
 #    cts
-#    service-design-standards
-#    tech-standards
 }
 
 for team, count in sorted(teams.items()):
     if team and slug(team) not in team_styles:
         print("Unstyled team: %s %d" % (team, count))
 
+for community, count in sorted(communities.items()):
+    print("Community: %s %d" % (community, count))
+
+for title, count in sorted(titles.items()):
+    print("Title: %s %d" % (title, count))
+
 with open('output.html', 'wb') as fobj:
     fobj.write(template.render({
         'title': 'Org Chart',
         'team_styles': team_styles,
-        'data': data
+        'data': data,
+        'teams': sorted(teams.items()),
+        'communities': sorted(communities.items()),
+        'titles': sorted(titles.items()),
     }).encode('utf8'))
 
 #import pprint

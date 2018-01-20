@@ -24,3 +24,85 @@ body {
   overflow: auto;
   text-align: center;
 }
+
+.hovered_node {
+  display: block;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  z-index: 1000;
+}
+.team_list {
+  display: inline-block;
+  height: 180px;
+  overflow-y: scroll;
+}
+.team_list ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.community_list {
+  display: inline-block;
+  height: 180px;
+  overflow-y: scroll;
+}
+.community_list ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.title_list {
+  display: inline-block;
+  height: 180px;
+  overflow-y: scroll;
+}
+.title_list ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+
+
+#tools {
+  position: absolute;
+  padding-left: 20px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  border: solid black;
+  background: white;
+  height: 180px;
+  top: 0px;
+  left: 0px;
+  z-index: 1000;
+  overflow: hidden;
+}
+
+#tools.collapsed {
+  width: 0px;
+}
+
+#tools>div {
+  display: inline-block;
+  height: 100%;
+}
+
+#tool-expand {
+  float: right;
+  margin-left: 20px;
+}
+#tool-expand>button {
+  display: block;
+  position: absolute;
+  top: 50%;
+  right: 0px;
+  height: 100px;
+  margin-top: -50px;
+  width: 20px;
+}
+
+.orgchart table {
+  margin-left: auto;
+  margin-right: auto;
+}

@@ -1,16 +1,10 @@
 .hovered_node {
   box-sizing: border-box;
   display: block;
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  z-index: 1000;
   margin: 0;
   padding: 3px;
   border: 2px dashed transparent;
   text-align: center;
-  width: 180px;
-  height: 80px;
 }
 
 .hovered_node .edge {
