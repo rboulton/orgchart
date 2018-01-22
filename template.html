@@ -68,9 +68,8 @@
   <script type="text/javascript" src="assets/orgchart.js"></script>
   <script type="text/javascript">
     $(function() {
-      var data = {{ data|tojson|safe }};
       var csvdata = {{ csvdata|tojson|safe }};
-      makeOrgChart(data, csvdata);
+      makeOrgChart(csvdata);
     });
   </script>
   </body>

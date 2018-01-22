@@ -136,9 +136,8 @@ team_styles = {
 with open('output.html', 'wb') as fobj:
     fobj.write(template.render({
         'title': 'Org Chart',
-        'team_styles': team_styles,
-        'data': data,
         'csvdata': csv_rows,
+        'team_styles': team_styles,
         'teams': sorted(teams.items()),
         'communities': sorted(communities.items()),
         'titles': sorted(titles.items()),
