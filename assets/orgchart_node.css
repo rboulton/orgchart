@@ -46,3 +46,8 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+#chart_container .node {
+  padding-top: 0px;
+  padding-bottom: 0px;
+}

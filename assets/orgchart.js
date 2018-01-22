@@ -71,9 +71,18 @@ $(function() {
       }
 
       var classes = [];
-      teams[slug(team)] = (teams[slug(team)] || 0) + 1;
-      communities[slug(community)] = (communities[slug(community)] || 0) + 1;
-      titles[slug(title)] = (titles[slug(title)] || 0) + 1;
+      teams[slug(team)] = {
+        name: team,
+        count:((teams[slug(team)]||{}).count || 0) + 1
+      };
+      communities[slug(community)] = {
+        name: community,
+        count:((communities[slug(community)]||{}).count || 0) + 1
+      };
+      titles[slug(title)] = {
+        name: title,
+        count:((titles[slug(title)]||{}).count || 0) + 1
+      };
       classes.push('team-' + slug(team));
       classes.push('community-' + slug(community));
       classes.push('title-' + slug(title));
@@ -97,10 +106,33 @@ $(function() {
     };
   }
 
+  function buildOptionList(target, type, title, options) {
+    var option_template = doT.template(
+      '<ol>' +
+      '<li><input checked type="checkbox" id="{{=it.type}}-toggle-all"><label for="{{=it.type}}-toggle-all">{{=it.title}}</label></li>' +
+      '{{~it.options :option:index}}' +
+      '<li><input checked type="checkbox" class="{{=it.type}}-toggle" data-{{=it.type}}="{{=option.slug}}" id="{{=it.type}}-{{=option.slug}}"><label for="{{=it.type}}-{{=option.slug}}">{{=option.name}} ({{=option.count}})</label></li>' +
+      '{{~}}' +
+      '</ol>'
+    );
+
+    var option_array = $.map(options, function(obj, slug) {
+      return { slug: slug, name: escapeHtml(obj.name), count: obj.count };
+    });
+    option_array.sort(function(a, b) {
+      var namea = a.name.toLowerCase();
+      var nameb = b.name.toLowerCase();
+      if (namea < nameb) return -1;
+      if (namea > nameb) return 1;
+      return 0;
+    });
+    target.html(option_template({options: option_array, title: title, type: type}));
+  }
+
   function buildChart(csvdata) {
     data = buildHierarchy(csvdata);
 
-    $('#chart-container').orgchart({
+    $('#chart_container').orgchart({
       'data' : data.hierarchy,
       'nodeContent': 'title',
       'toggleSiblingsResp': false,
@@ -108,28 +140,9 @@ $(function() {
       'exportFileextension': 'pdf'
     });
 
-    var team_template = doT.template(
-      '<ol id="team_list_items">' +
-      '<li><input checked type="checkbox" id="team-toggle-all"><label for="team-toggle-all">All Teams</label></li>' +
-      '{{~it.teams :team:index}}' +
-      '<li><input checked type="checkbox" class="team-toggle" data-team="{{=team.name}}" id="team-{{=team.name}}"><label for="team-{{=team.name}}">{{=team.name}} ({{=team.count}})</label></li>' +
-      '{{~}}' +
-      '</ol>'
-    );
-
-    var team_array = $.map(data.teams, function(count, name) {
-      return { name: name, count: count };
-    });
-    team_array.sort(function(a, b) {
-      if (a.name < b.name) return -1;
-      if (a.name > b.name) return 1;
-      return 0;
-    });
-    console.log(team_array);
-    console.log(team_template({teams: team_array}))
-    $('#team_list').html(
-      team_template({teams: team_array})
-    );
+    buildOptionList($('#team_list'), 'team', 'All teams', data.teams);
+    buildOptionList($('#community_list'), 'community', 'All communities', data.communities);
+    buildOptionList($('#title_list'), 'title', 'All titles', data.titles);
   }
 
   function setMinimised() {

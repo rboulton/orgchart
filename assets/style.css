@@ -12,7 +12,7 @@ body {
   color: #333333;
 }
 
-#chart-container {
+#chart_container {
   position: relative;
   display: inline-block;
   top: 0px;
@@ -29,32 +29,12 @@ body {
   right: 0px;
   z-index: 1000;
 }
-.team_list {
+.option_list {
   display: inline-block;
   height: 180px;
   overflow-y: scroll;
 }
-.team_list ol {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.community_list {
-  display: inline-block;
-  height: 180px;
-  overflow-y: scroll;
-}
-.community_list ol {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.title_list {
-  display: inline-block;
-  height: 180px;
-  overflow-y: scroll;
-}
-.title_list ol {
+.option_list ol {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -62,7 +42,7 @@ body {
 
 #tools {
   position: fixed;
-  padding-left: 20px;
+  padding-left: 0px;
   padding-top: 0px;
   padding-bottom: 0px;
   border: solid black;
@@ -76,6 +56,7 @@ body {
 
 #tools.collapsed {
   width: 0px;
+  padding-left: 20px;
 }
 
 #tools>div {

@@ -24,26 +24,9 @@
 </head>
 <body>
   <div id="tools">
-    <div class="team_list" id="team_list">
-    </div>
-
-    <div class="community_list">
-      <ol>
-        <li><input checked type="checkbox" id="community-toggle-all"><label for="community-toggle-all">All Communities</label></li>
-        {% for community, count in communities %}
-        <li><input checked type="checkbox" class="community-toggle" data-community="{{community}}" id="community-{{ community }}"><label for="community-{{ community }}">{{ community }} ({{count}})</label></li>
-        {% endfor %}
-      </ol>
-    </div>
-
-    <div class="title_list">
-      <ol>
-        <li><input checked type="checkbox" id="title-toggle-all"><label for="title-toggle-all">All job titles</label></li>
-        {% for title, count in titles %}
-        <li><input checked type="checkbox" class="title-toggle" data-title="{{title}}" id="title-{{ title }}"><label for="title-{{ title }}">{{ title }} ({{count}})</label></li>
-        {% endfor %}
-      </ol>
-    </div>
+    <div class="option_list" id="team_list"></div>
+    <div class="option_list" id="community_list"></div>
+    <div class="option_list" id="title_list"></div>
 
     <div id="tool-expand">
       <button>
@@ -52,7 +35,7 @@
     </div>
   </div>
   <div class="hovered_node node"></div>
-  <div id="chart-container"></div>
+  <div id="chart_container"></div>
 
   <script type="text/javascript" src="assets/es6-promise.auto.min.js"></script>
   <script type="text/javascript" src="assets/html2canvas.min.js"></script>
