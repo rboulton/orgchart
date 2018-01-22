@@ -11,9 +11,11 @@ template = Template(open(template_file).read())
 
 csv_data = list(csv.reader(open('org_chart.csv')))
 
+csv_rows = []
 people = {}
 for row in csv_data[1:]:
-    _, _, person, team, community, title, manager, level = row
+    _, _, person, team, community, title, manager, _ = row
+    csv_rows.append((person, manager, title, team, community))
     record = people.setdefault(person, {})
     record.update(dict(
         name = person,
@@ -21,7 +23,6 @@ for row in csv_data[1:]:
         community = community,
         title = title,
         manager = manager,
-        level = level,
     ))
     manager_record = people.setdefault(manager, dict(name=manager))
     manager_record.setdefault('reports', []).append(person)
@@ -43,7 +44,6 @@ def genStructure(name, depth):
     team = record.get('team', '') or 'other'
     community = record.get('community', '') or 'other'
     title = record.get('title', '') or 'other'
-    # level = record.get('level', '0')
 
     text = '%s<br>%s<br>%s' % (title, team, community)
 
@@ -133,25 +133,13 @@ team_styles = {
 #    cts
 }
 
-for team, count in sorted(teams.items()):
-    if team and slug(team) not in team_styles:
-        print("Unstyled team: %s %d" % (team, count))
-
-for community, count in sorted(communities.items()):
-    print("Community: %s %d" % (community, count))
-
-for title, count in sorted(titles.items()):
-    print("Title: %s %d" % (title, count))
-
 with open('output.html', 'wb') as fobj:
     fobj.write(template.render({
         'title': 'Org Chart',
         'team_styles': team_styles,
         'data': data,
+        'csvdata': csv_rows,
         'teams': sorted(teams.items()),
         'communities': sorted(communities.items()),
         'titles': sorted(titles.items()),
     }).encode('utf8'))
-
-#import pprint
-#pprint.pprint(data)
