@@ -24,13 +24,7 @@
 </head>
 <body>
   <div id="tools">
-    <div class="team_list">
-      <ol>
-        <li><input checked type="checkbox" id="team-toggle-all"><label for="team-toggle-all">All Teams</label></li>
-        {% for team, count in teams %}
-        <li><input checked type="checkbox" class="team-toggle" data-team="{{team}}" id="team-{{ team }}"><label for="team-{{ team }}">{{ team }} ({{count}})</label></li>
-        {% endfor %}
-      </ol>
+    <div class="team_list" id="team_list">
     </div>
 
     <div class="community_list">
@@ -65,6 +59,7 @@
   <script type="text/javascript" src="assets/jquery.min.js"></script>
   <script type="text/javascript" src="assets/jspdf.min.js"></script>
   <script type="text/javascript" src="assets/jquery.orgchart.js"></script>
+  <script type="text/javascript" src="assets/doT.min.js"></script>
   <script type="text/javascript" src="assets/orgchart.js"></script>
   <script type="text/javascript">
     $(function() {

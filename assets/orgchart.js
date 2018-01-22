@@ -71,9 +71,9 @@ $(function() {
       }
 
       var classes = [];
-      teams[slug(team)] += 1;
-      communities[slug(community)] += 1;
-      titles[slug(title)] += 1;
+      teams[slug(team)] = (teams[slug(team)] || 0) + 1;
+      communities[slug(community)] = (communities[slug(community)] || 0) + 1;
+      titles[slug(title)] = (titles[slug(title)] || 0) + 1;
       classes.push('team-' + slug(team));
       classes.push('community-' + slug(community));
       classes.push('title-' + slug(title));
@@ -88,20 +88,48 @@ $(function() {
     data.children = $.map(topPeople, function(name) {
       return genStructure(name, 1);
     });
-    return data;
+
+    return {
+      hierarchy: data,
+      teams: teams,
+      communities: communities,
+      titles: titles
+    };
   }
 
   function buildChart(csvdata) {
     data = buildHierarchy(csvdata);
-    console.log(csvdata);
 
     $('#chart-container').orgchart({
-      'data' : data,
+      'data' : data.hierarchy,
       'nodeContent': 'title',
       'toggleSiblingsResp': false,
       'exportButton': true,
       'exportFileextension': 'pdf'
     });
+
+    var team_template = doT.template(
+      '<ol id="team_list_items">' +
+      '<li><input checked type="checkbox" id="team-toggle-all"><label for="team-toggle-all">All Teams</label></li>' +
+      '{{~it.teams :team:index}}' +
+      '<li><input checked type="checkbox" class="team-toggle" data-team="{{=team.name}}" id="team-{{=team.name}}"><label for="team-{{=team.name}}">{{=team.name}} ({{=team.count}})</label></li>' +
+      '{{~}}' +
+      '</ol>'
+    );
+
+    var team_array = $.map(data.teams, function(count, name) {
+      return { name: name, count: count };
+    });
+    team_array.sort(function(a, b) {
+      if (a.name < b.name) return -1;
+      if (a.name > b.name) return 1;
+      return 0;
+    });
+    console.log(team_array);
+    console.log(team_template({teams: team_array}))
+    $('#team_list').html(
+      team_template({teams: team_array})
+    );
   }
 
   function setMinimised() {
@@ -166,65 +194,68 @@ $(function() {
     })
   }
 
-  $("input.community-toggle").change(function(e) {
-    setMinimised();
-  });
-
-  $("input.team-toggle").change(function(e) {
-    setMinimised();
-  });
-
-  $("input.title-toggle").change(function(e) {
-    setMinimised();
-  });
-
-  $("input#community-toggle-all").change(function(e) {
-    var checked = $(this).is(':checked');
-    $("input.community-toggle").each(function(_, input) {
-      input.checked = checked;
+  function setTriggers() {
+    $("input.community-toggle").change(function(e) {
+      setMinimised();
     });
-    setMinimised();
-  });
 
-  $("input#team-toggle-all").change(function(e) {
-    var checked = $(this).is(':checked');
-    $("input.team-toggle").each(function(_, input) {
-      input.checked = checked;
+    $("input.team-toggle").change(function(e) {
+      setMinimised();
     });
-    setMinimised();
-  });
 
-  $("input#title-toggle-all").change(function(e) {
-    var checked = $(this).is(':checked');
-    $("input.title-toggle").each(function(_, input) {
-      input.checked = checked;
+    $("input.title-toggle").change(function(e) {
+      setMinimised();
     });
-    setMinimised();
-  });
+
+    $("input#community-toggle-all").change(function(e) {
+      var checked = $(this).is(':checked');
+      $("input.community-toggle").each(function(_, input) {
+        input.checked = checked;
+      });
+      setMinimised();
+    });
+
+    $("input#team-toggle-all").change(function(e) {
+      var checked = $(this).is(':checked');
+      $("input.team-toggle").each(function(_, input) {
+        input.checked = checked;
+      });
+      setMinimised();
+    });
+
+    $("input#title-toggle-all").change(function(e) {
+      var checked = $(this).is(':checked');
+      $("input.title-toggle").each(function(_, input) {
+        input.checked = checked;
+      });
+      setMinimised();
+    });
 
 
-  $(".orgchart .node").hover(function() {
-    var contents = ($(this).html());
-    $(".hovered_node").empty();
-    $(this).clone().appendTo(".hovered_node");
-  }, function() {
-    $(".hovered_node").empty();
-  });
+    $(".orgchart .node").hover(function() {
+      var contents = ($(this).html());
+      $(".hovered_node").empty();
+      $(this).clone().appendTo(".hovered_node");
+    }, function() {
+      $(".hovered_node").empty();
+    });
 
-  $("#tool-expand>button").click(function(e) {
-    var button = $(this);
-    var toolbox = $("#tools");
-    e.preventDefault();
-    if (toolbox.hasClass("collapsed")){
-      toolbox.removeClass("collapsed");
-      $("#tool-expand>button>i").removeClass("fa-angle-double-right").addClass("fa-angle-double-left")
-    } else {
-      toolbox.addClass("collapsed");
-      $("#tool-expand>button>i").removeClass("fa-angle-double-left").addClass("fa-angle-double-right")
-    }
-  });
+    $("#tool-expand>button").click(function(e) {
+      var button = $(this);
+      var toolbox = $("#tools");
+      e.preventDefault();
+      if (toolbox.hasClass("collapsed")){
+        toolbox.removeClass("collapsed");
+        $("#tool-expand>button>i").removeClass("fa-angle-double-right").addClass("fa-angle-double-left")
+      } else {
+        toolbox.addClass("collapsed");
+        $("#tool-expand>button>i").removeClass("fa-angle-double-left").addClass("fa-angle-double-right")
+      }
+    });
+  }
 
   window.makeOrgChart = function(csvdata) {
     buildChart(csvdata);
+    setTriggers();
   }
 });
