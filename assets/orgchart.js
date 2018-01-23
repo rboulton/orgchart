@@ -101,8 +101,8 @@ $(function() {
     }
 
     data = {}
-    data.name = 'Kevin Cunnington';
-    data.title = 'Kevin Cunnington';
+    data.name = 'Top';
+    data.title = 'Top';
     data.children = $.map(topPeople, function(name) {
       return genStructure(name, 1);
     });
