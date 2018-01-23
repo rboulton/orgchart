@@ -64,7 +64,6 @@
           config: {
             header: true,
             complete: function(results, file) {
-              console.log("This file done:", file, results);
 
               makeOrgChart(results.data);
               $("#chart_area").removeClass("hidden");
@@ -72,7 +71,6 @@
             }
           },
           complete: function() {
-            console.log("All files done!");
           }
         });
       });
