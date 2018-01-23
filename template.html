@@ -14,10 +14,6 @@
     .orgchart td>.down { background-color: #aaa; }
     .orgchart .node { width: 180px; }
     .orgchart .node .content { height: 60px; }
-    {% for team, style in team_styles.items() %}
-    div.node.team-{{ team }} .content { {{ style["content"] }} }
-    div.node.team-{{ team }} .title { {{ style["title"] }} }
-    {% endfor %}
     .orgchart .node.minimised { width: 30px; }
     .orgchart .node.minimised .content { height: 0px; }
   </style>
@@ -43,6 +39,7 @@
   <script type="text/javascript" src="assets/jspdf.min.js"></script>
   <script type="text/javascript" src="assets/jquery.orgchart.js"></script>
   <script type="text/javascript" src="assets/doT.min.js"></script>
+  <script type="text/javascript" src="assets/papaparse.min.js"></script>
   <script type="text/javascript" src="assets/orgchart.js"></script>
   <script type="text/javascript">
     $(function() {

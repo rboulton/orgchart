@@ -143,6 +143,8 @@ $(function() {
     buildOptionList($('#team_list'), 'team', 'All teams', data.teams);
     buildOptionList($('#community_list'), 'community', 'All communities', data.communities);
     buildOptionList($('#title_list'), 'title', 'All titles', data.titles);
+
+    return data;
   }
 
   function setMinimised() {
@@ -267,8 +269,37 @@ $(function() {
     });
   }
 
+  function setColours(type, options) {
+    var numColours = 34;
+    $(".orgchart .node .title").each(function () {
+      var node = $(this);
+      for (var col = 1; col <= numColours; col++) {
+        node.removeClass('bg-col-' + col);
+      }
+    });
+
+    var option_array = $.map(options, function(obj, slug) {
+      return { slug: slug, name: escapeHtml(obj.name), count: obj.count };
+    });
+    option_array.sort(function(a, b) {
+      if (a.count > b.count) return -1;
+      if (a.count < b.count) return 1;
+      return 0;
+    });
+
+    $.each(option_array, function(i, option) {
+      $('.orgchart .node.' + type + '-' + option.slug + ' .title').each(function () {
+        var node = $(this);
+        node.addClass('bg-col-' + ((i % numColours) + 1));
+      })
+    })
+  }
+
   window.makeOrgChart = function(csvdata) {
-    buildChart(csvdata);
+    var data = buildChart(csvdata);
     setTriggers();
+    setColours('team', data.teams);
+    // setColours('community', data.communities);
+    // setColours('title', data.titles);
   }
 });
