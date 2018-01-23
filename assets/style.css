@@ -116,3 +116,7 @@ body {
 .bg-col-31 { background-color: #64d9a2; }
 .bg-col-32 { background-color: #2e2ed9; }
 .bg-col-33 { background-color: #d92ea0; }
+
+.hidden {
+  display: none;
+}

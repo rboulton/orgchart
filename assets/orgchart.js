@@ -10,11 +10,20 @@ $(function() {
   function buildHierarchy(csvdata) {
     var people = {};
     $.each(csvdata, function(i, val) {
-      var name = val[0],
-          manager = val[1],
-          title = val[2],
-          team = val[3],
-          community = val[4];
+      var name, manager, title, team, community;
+      if (val.person) {
+        name = val.person
+        manager = val.manager
+        title = val.title
+        team = val.team
+        community = val.community
+      } else {
+        name = val[0]
+        manager = val[1]
+        title = val[2]
+        team = val[3]
+        community = val[4]
+      }
       var record = people[name];
       if (!record) {
         record = {};
